@@ -3,4 +3,4 @@ const { CardGame } = require('./game');
 
 const server = Server({ games: [CardGame] });
 
-server.run(8000);
+server.run(process.env.PORT || 8000);
