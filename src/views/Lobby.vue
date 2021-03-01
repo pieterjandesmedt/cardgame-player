@@ -8,9 +8,9 @@
 			</template>
 		</b-field>
 		<div v-if="playerName">
-			<div v-if="matches.length > 0" class="mt-6">
+			<div v-if="filteredMatches.length > 0" class="mt-6">
 				<h2 class="is-size-4">Join game</h2>
-				<div v-for="match in matches" :key="match.matchID">
+				<div v-for="match in filteredMatches" :key="match.matchID">
 					<router-link
 						:to="`/match/${match.matchID}`"
 						:disabled="!playerName"
@@ -55,6 +55,17 @@ export default {
 	},
 	computed: {
 		...mapState(['matches', 'playerName']),
+		filteredMatches() {
+			console.log(
+				'filteredMatches',
+				this.matches.filter(
+					match => match.players.filter(player => player.name && player.isConnected).length > 0,
+				),
+			);
+			return this.matches.filter(
+				match => match.players.filter(player => player.name && player.isConnected).length > 0,
+			);
+		},
 		name: {
 			get() {
 				return this.playerName;

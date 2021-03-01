@@ -20,7 +20,7 @@ export default {
 		...mapState(['playerName']),
 	},
 	methods: {
-		...mapActions(['joinGame']),
+		...mapActions(['joinGame', 'leaveGame']),
 		async join(matchID) {
 			try {
 				await this.joinGame({
@@ -36,6 +36,9 @@ export default {
 	mounted() {
 		if (!this.$route.params.matchID) this.$router.push('/lobby');
 		this.join(this.$route.params.matchID);
+	},
+	async beforeDestroy() {
+		await this.leaveGame();
 	},
 };
 </script>
