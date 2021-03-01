@@ -7,7 +7,7 @@
     "build": "vue-cli-service build",
     "test:unit": "vue-cli-service test:unit",
     "lint": "vue-cli-service lint",
-    "server": "nodemon -r esm src/server.js"
+    "start": "node -r esm src/server.js"
   },
   "dependencies": {
     "boardgame.io": "^0.43.3",
