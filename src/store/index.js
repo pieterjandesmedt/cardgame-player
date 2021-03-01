@@ -7,10 +7,14 @@ import { SocketIO } from 'boardgame.io/multiplayer';
 import { LobbyClient } from 'boardgame.io/client';
 import { CardGame } from '../game.js';
 
-const lobbyClient = new LobbyClient({ server: 'http://localhost:8000' });
+const server =
+	process.env.NODE_ENV === 'production' ? 'https://cardgame-player.herokuapp.com/' : 'http://localhost:8000';
+const socketServer = process.env.NODE_ENV === 'production' ? 'cardgame-player.herokuapp.com/' : 'localhost:8000';
+
+const lobbyClient = new LobbyClient({ server });
 const client = new Client({
 	game: CardGame,
-	multiplayer: SocketIO({ server: 'localhost:8000' }),
+	multiplayer: SocketIO({ server: socketServer }),
 	debug: false,
 });
 
