@@ -16,7 +16,7 @@
 				</p>
 			</b-field>
 			<h4 v-else class="has-text-weight-bold mb-0 has-cursor-text" @click="isEditingName = true">
-				{{ stack.name || 'Deck' }} {{ stack.id }}
+				{{ stack.name || 'Deck' }}
 				<small class="has-size-7 has-text-weight-light"
 					>{{ stack.cards.length }} card{{ stack.cards.length === 1 ? '' : 's' }}</small
 				>
@@ -240,7 +240,7 @@ export default {
 				'z-index': this.stack.cards.length - index,
 				transform: `rotateZ(${rotateZ}deg)`,
 				'margin-left': index ? `calc(-200px - 8px + ${slider / 10}em)` : 0,
-				transition: 'margin 100ms',
+				transition: 'transform  150ms ease-in-out, margin 150ms ease-in-out',
 			};
 		},
 		minimizedStyle(cards) {
@@ -288,10 +288,6 @@ export default {
 	position: relative;
 	margin-right: 10px;
 	/* will-change: transform; */
-}
-.stacked + .stacked {
-	margin-left: calc(-200px - 10px + 2px);
-	transition: margin-left 150ms ease-in-out;
 }
 .drop-target {
 	border-color: white;

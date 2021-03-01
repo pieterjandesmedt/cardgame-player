@@ -202,6 +202,10 @@ const store = {
 		sendChatMessage(_, payload) {
 			client.sendChatMessage(payload);
 		},
+		undo() {
+			console.log('undo');
+			client.undo();
+		},
 	},
 };
 

@@ -12,3 +12,9 @@ export default {
 	mixins: [Interact],
 };
 </script>
+
+<style>
+.interact {
+	touch-action: none;
+}
+</style>

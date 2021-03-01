@@ -1,11 +1,13 @@
 <template>
-	<div class="box is-shadowless image is-3by4 is-relative">
-		<div class="box-card m-2">
-			<div v-if="card.isFaceUp" class="front-of-card is-flex-direction-column is-flex">
-				<zone v-for="zone in card.zones" :key="zone.id" :zone="zone" :value="zone.value"></zone>
-			</div>
-			<div v-else class="back-of-card is-flex" :style="cardBackStyle">
-				<div class="deck-name" :style="textStyle">{{ card.deckName || 'Deck' }}</div>
+	<div class="scene">
+		<div class="box is-shadowless image is-3by4 is-relative card-scene" :class="{ 'is-flipped': !card.isFaceUp }">
+			<div class="box-card m-2">
+				<div v-if="card.isFaceUp" class="front-of-card is-flex-direction-column is-flex">
+					<zone v-for="zone in card.zones" :key="zone.id" :zone="zone" :value="zone.value"></zone>
+				</div>
+				<div v-else class="back-of-card is-flex" :style="cardBackStyle">
+					<div class="deck-name" :style="textStyle">{{ card.deckName || 'Deck' }}</div>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -65,6 +67,8 @@ export default {
 
 .box {
 	border: 1px solid lightgrey;
+	transition: transform 200ms;
+	transform-style: preserve-3d;
 }
 
 .box-card {
@@ -80,11 +84,21 @@ export default {
 
 .front-of-card {
 	height: 100%;
+	backface-visibility: hidden;
 }
 
 .back-of-card {
 	height: 100%;
 	align-items: center;
 	border-radius: 0.25em;
+	transform: rotateY(180deg);
+}
+
+.card-scene {
+	perspective: 600px;
+}
+
+.box.is-flipped {
+	transform: rotateY(180deg);
 }
 </style>

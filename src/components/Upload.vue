@@ -1,8 +1,10 @@
 <template>
-	<b-upload v-model="file" class="file-label" accept="application/json" @input="uploadDeck">
-		<a class="button">
-			<b-icon icon="cards-outline"></b-icon>
-		</a>
+	<b-upload v-model="file" accept="application/json" @input="uploadDeck">
+		<b-tooltip label="Upload deck" position="is-bottom">
+			<a class="button mr-2">
+				<b-icon icon="cards-outline"></b-icon>
+			</a>
+		</b-tooltip>
 	</b-upload>
 </template>
 
