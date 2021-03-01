@@ -9,11 +9,13 @@ import { CardGame } from '../game.js';
 
 const server =
 	process.env.NODE_ENV === 'production' ? 'https://cardgame-player.herokuapp.com/' : 'http://localhost:8000';
+const socketServer =
+	process.env.NODE_ENV === 'production' ? 'wss://cardgame-player.herokuapp.com/' : 'ws://localhost:8000';
 
 const lobbyClient = new LobbyClient({ server });
 const client = new Client({
 	game: CardGame,
-	multiplayer: SocketIO({ server }),
+	multiplayer: SocketIO({ server: socketServer }),
 	debug: false,
 });
 
