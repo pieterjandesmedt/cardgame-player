@@ -1,0 +1,14 @@
+<template>
+	<div class="interact">
+		<slot></slot>
+	</div>
+</template>
+
+<script>
+import { Interact } from './vue-interact.js';
+
+export default {
+	name: 'Interact',
+	mixins: [Interact],
+};
+</script>
