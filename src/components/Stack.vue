@@ -223,24 +223,25 @@ export default {
 			if (cardId && fromStackId) this.flipCard({ cardId, fromStackId });
 		},
 		stackStyle(index) {
-			const slider = {
+			const size = this.stack.cards[index].size;
+			const rotation = {
 				stacked: 0,
-				spread: 20,
-				free: 130,
+				spread: 5,
+				free: 0,
 			}[this.displayMode];
-			// 0 => 0,
-			// 20 => 20,
-			// >=40 => 0
-			const sliderToTriangle = Math.max(0, 20 - Math.abs(20 - slider));
+			const margin = {
+				stacked: `-${1 + size}em`,
+				spread: `${1.5 - size}em`,
+				free: 0,
+			}[this.displayMode];
 			const rotateZ =
-				(((index - Math.floor(this.stack.cards.length / 2)) / (this.stack.cards.length || 1)) *
-					sliderToTriangle) /
-				4;
+				((index - Math.floor(this.stack.cards.length / 2)) / (this.stack.cards.length || 1)) * rotation;
 			return {
 				'z-index': this.stack.cards.length - index,
 				transform: `rotateZ(${rotateZ}deg)`,
-				'margin-left': index ? `calc(-200px - 8px + ${slider / 10}em)` : 0,
 				transition: 'transform  150ms ease-in-out, margin 150ms ease-in-out',
+				'margin-left': index ? margin : 0,
+				width: `${size}em`,
 			};
 		},
 		minimizedStyle(cards) {

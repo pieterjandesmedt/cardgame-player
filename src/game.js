@@ -26,6 +26,8 @@ export const CardGame = {
 				card.deckColor = card.deckColor || newStack.deck.color;
 				card.deckName = card.deckName || newStack.deck.name;
 				card.isFaceUp = card.isFaceUp || true;
+				card.ratio = newStack.deck.ratio || 'is-3by4';
+				card.size = newStack.deck.size || 20;
 			});
 			G.players[owner].stacks.push({
 				id: cuid(),

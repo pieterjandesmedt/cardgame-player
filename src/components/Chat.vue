@@ -62,6 +62,7 @@ export default {
 	right: 1em;
 	bottom: 1em;
 	max-width: 300px;
+	z-index: 9999;
 	p {
 		opacity: 0.9;
 		&.is-borderless {

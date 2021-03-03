@@ -1,6 +1,9 @@
 <template>
 	<div class="scene">
-		<div class="box is-shadowless image is-3by4 is-relative card-scene" :class="{ 'is-flipped': !card.isFaceUp }">
+		<div
+			class="box is-shadowless image is-relative card-scene"
+			:class="`${card.ratio || 'is-3by4'}${card.isFaceUp ? '' : ' is-flipped'}`"
+		>
 			<div class="box-card m-2">
 				<div v-if="card.isFaceUp" class="front-of-card is-flex-direction-column is-flex">
 					<zone v-for="zone in card.zones" :key="zone.id" :zone="zone" :value="zone.value"></zone>
