@@ -22,7 +22,7 @@
 				>
 			</h4>
 			<b-tooltip type="is-danger" class="mt-1 is-pulled-right" label="Delete stack">
-				<button class="delete" @click="deleteStack(stack.id)"></button>
+				<button class="delete" @click="confirmDelete"></button>
 			</b-tooltip>
 			<div class="buttons has-addons mb-0 mr-2" v-if="hasACard">
 				<b-tooltip label="Take in your hand" v-if="isTable">
@@ -274,6 +274,18 @@ export default {
 			return {
 				'background-color': this.isMinimized && cards && cards.length > 0 ? cards[0].deckColor : 'transparent',
 			};
+		},
+		confirmDelete() {
+			this.$buefy.dialog.confirm({
+				title: 'Delete stack?',
+				message:
+					'<p>Are you sure you want to <b>delete</b> this stack? The cards will be gone from this game.<br/><br/>This action cannot be undone.</p>',
+				confirmText: 'Delete Stack',
+				type: 'is-danger',
+				hasIcon: true,
+				focusOn: 'cancel',
+				onConfirm: () => this.deleteStack(this.stack.id),
+			});
 		},
 	},
 };
