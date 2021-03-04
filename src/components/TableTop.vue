@@ -1,16 +1,16 @@
 <template>
 	<div>
-		<div class="container is-fluid">
-			<div class="columns">
-				<nav-bar class="column is-narrow"></nav-bar>
-				<other-players class="column is-offset-1 mt-0" :players="matchData"></other-players>
-			</div>
+		<div class="columns">
+			<nav-bar class="column is-narrow"></nav-bar>
+			<other-players class="column is-offset-1 mt-0" :players="matchData"></other-players>
+		</div>
+		<div class="container is-fluid" v-if="tableStacks.length > 0">
 			<stack v-for="stack in tableStacks" :key="stack.id" :isTable="true" :stack="stack"></stack>
 		</div>
 		<section class="hero" v-if="tableStacks.length > 0 && stacks.length > 0">
 			<div class="hero-body has-background-dark py-5"></div>
 		</section>
-		<div class="container is-fluid">
+		<div class="container is-fluid" v-if="stacks.length > 0">
 			<stack v-for="stack in stacks" :key="stack.id" :stack="stack"></stack>
 		</div>
 	</div>

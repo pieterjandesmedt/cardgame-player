@@ -68,10 +68,13 @@ export default {
 	white-space: pre-line;
 }
 
+.scene {
+	transform-style: preserve-3d;
+}
+
 .box {
 	border: 1px solid lightgrey;
 	transition: transform 200ms;
-	transform-style: preserve-3d;
 }
 
 .box-card {
