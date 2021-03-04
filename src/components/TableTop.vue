@@ -7,8 +7,8 @@
 			</div>
 			<stack v-for="stack in tableStacks" :key="stack.id" :isTable="true" :stack="stack"></stack>
 		</div>
-		<section class="hero is-dark" v-if="tableStacks.length > 0">
-			<div class="hero-body py-5"></div>
+		<section class="hero" v-if="tableStacks.length > 0 && stacks.length > 0">
+			<div class="hero-body has-background-dark py-5"></div>
 		</section>
 		<div class="container is-fluid">
 			<stack v-for="stack in stacks" :key="stack.id" :stack="stack"></stack>
@@ -50,5 +50,9 @@ li {
 }
 a {
 	color: #42b983;
+}
+.hero {
+	border-top: 3px solid rgba(54, 54, 54, 0.2);
+	border-bottom: 3px solid rgba(255, 255, 255, 0.7);
 }
 </style>
