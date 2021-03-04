@@ -64,7 +64,7 @@ export const CardGame = {
 				G.table.stacks.find(stack => stack.id === fromStackId);
 			const toStack =
 				G.players[owner].stacks.find(stack => stack.id === toStackId) ||
-				G.table.stacks.find(stack => stack.id === fromStackId);
+				G.table.stacks.find(stack => stack.id === toStackId);
 			if (!fromStack || !toStack)
 				throw new Error(`One of the stacks was not found. Couldn't move card ${cardId}.`);
 
@@ -228,7 +228,7 @@ export const CardGame = {
 				G.table.stacks.find(stack => stack.id === fromStackId);
 			const toStack =
 				G.players[owner].stacks.find(stack => stack.id === toStackId) ||
-				G.table.stacks.find(stack => stack.id === fromStackId);
+				G.table.stacks.find(stack => stack.id === toStackId);
 
 			if (!fromStack) throw new Error(`The stack was not found. Couldn't merge stack ${fromStackId}.`);
 			if (!toStack) throw new Error(`The stack was not found. Couldn't merge into stack ${toStackId}.`);

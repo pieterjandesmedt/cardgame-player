@@ -25,10 +25,10 @@
 				<button class="delete" @click="deleteStack(stack.id)"></button>
 			</b-tooltip>
 			<div class="buttons has-addons mb-0 mr-2" v-if="hasACard">
-				<b-tooltip label="Take deck in four hand" v-if="isTable">
+				<b-tooltip label="Take in your hand" v-if="isTable">
 					<b-button icon-left="hand-right" @click="takeStackInHand(stack.id)" type="is-small"> </b-button>
 				</b-tooltip>
-				<b-tooltip label="Put deck on the table" v-else>
+				<b-tooltip label="Put on the table" v-else>
 					<b-button icon-left="table-furniture" @click="putStackOnTable(stack.id)" type="is-small">
 					</b-button>
 				</b-tooltip>

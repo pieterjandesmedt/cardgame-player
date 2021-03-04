@@ -1,12 +1,13 @@
 <template>
 	<div class="chat is-size-7">
 		<p
-			class="box is-shadowless is-borderless p-1 my-1"
+			class="box is-shadowless is-borderless p-1 my-1 has-background-primary-light"
 			v-for="chatMessage in lastChatMessages"
 			:key="chatMessage.id"
 			:style="messageStyle(chatMessage)"
 		>
-			<b>{{ messageSenderName(chatMessage) }}:</b> {{ chatMessage.payload }}
+			<b v-if="!chatMessage.payload.isBroadcast">{{ chatMessage.payload.senderName }}:</b>
+			{{ chatMessage.payload.text }}
 		</p>
 		<form @submit.prevent="sendMessage">
 			<b-input icon-right="chat-outline" size="is-small" v-model="message"> </b-input>
@@ -24,7 +25,7 @@ export default {
 		};
 	},
 	computed: {
-		...mapState(['chatMessages', 'playerID', 'matchData']),
+		...mapState(['chatMessages', 'playerName', 'matchData']),
 		lastChatMessages() {
 			return this.chatMessages.slice(Math.max(this.chatMessages.length - 5, 0));
 		},
@@ -36,16 +37,22 @@ export default {
 			this.message = '';
 		},
 		messageStyle(message) {
-			if (message.sender === this.playerID) {
+			if (message.payload.isBroadcast) {
 				return {
-					'margin-left': '1em',
+					margin: '0 1em',
+					'font-style': 'italic',
+				};
+			}
+			if (message.payload.senderName === this.playerName) {
+				return {
+					'margin-left': '2em',
 					'border-bottom-right-radius': 0,
 					'background-color': '#7957d5',
 					color: '#fff',
 				};
 			}
 			return {
-				'margin-right': '1em',
+				'margin-right': '2em',
 				'border-bottom-left-radius': 0,
 			};
 		},

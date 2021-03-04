@@ -100,10 +100,24 @@ const store = {
 		updateStack(_, stack) {
 			client.moves.updateStack(stack);
 		},
-		cutStack(_, payload) {
+		cutStack({ dispatch, state }, payload) {
+			const stack = state.G?.table?.stacks?.find(stack => stack.id === payload.id);
+			if (stack) {
+				dispatch('sendChatMessage', {
+					text: `${state.playerName} has cut stack '${stack.name || 'Deck'}'`,
+					isBroadcast: true,
+				});
+			}
 			client.moves.cutStack(payload);
 		},
-		deleteStack(_, id) {
+		deleteStack({ dispatch, state }, id) {
+			const stack = state.G?.table?.stacks?.find(stack => stack.id === id);
+			if (stack) {
+				dispatch('sendChatMessage', {
+					text: `${state.playerName} has cut stack '${stack.name || 'Deck'}'`,
+					isBroadcast: true,
+				});
+			}
 			client.moves.deleteStack(id);
 		},
 		setPlayerName({ commit }, playerName) {
@@ -179,38 +193,158 @@ const store = {
 				commit('setChatMessages', []);
 			}
 		},
-		showAllCards(_, stack) {
-			client.moves.showAllCards(stack);
+		showAllCards({ dispatch, state }, payload) {
+			const stack = state.G?.table?.stacks?.find(stack => stack.id === payload.id);
+			if (stack) {
+				dispatch('sendChatMessage', {
+					text: `${state.playerName} has flipped stack '${stack.name || 'Deck'}'`,
+					isBroadcast: true,
+				});
+			}
+			client.moves.showAllCards(payload);
 		},
-		hideAllCards(_, stack) {
-			client.moves.hideAllCards(stack);
+		hideAllCards({ dispatch, state }, payload) {
+			const stack = state.G?.table?.stacks?.find(stack => stack.id === payload.id);
+			if (stack) {
+				dispatch('sendChatMessage', {
+					text: `${state.playerName} has flipped stack '${stack.name || 'Deck'}'`,
+					isBroadcast: true,
+				});
+			}
+			client.moves.hideAllCards(payload);
 		},
-		moveCardBetweenStacks(_, payload) {
+		moveCardBetweenStacks({ dispatch, state }, payload) {
+			const fromStack = state.G?.table?.stacks?.find(stack => stack.id === payload.fromStackId);
+			if (fromStack) {
+				dispatch('sendChatMessage', {
+					text: `${state.playerName} took a card of stack '${fromStack.name || 'Deck'}'`,
+					isBroadcast: true,
+				});
+			}
+			const toStack = state.G?.table?.stacks?.find(stack => stack.id === payload.toStackId);
+			if (toStack) {
+				dispatch('sendChatMessage', {
+					text: `${state.playerName} put a card in stack '${toStack.name || 'Deck'}'`,
+					isBroadcast: true,
+				});
+			}
 			client.moves.moveCardBetweenStacks(payload);
 		},
-		giveCardToPlayer(_, payload) {
+		giveCardToPlayer({ dispatch, state }, payload) {
+			const stack = state.G?.table?.stacks?.find(stack => stack.id === payload.fromStackId);
+			if (stack) {
+				if (payload.toPlayerId === state.playerID)
+					dispatch('sendChatMessage', {
+						text: `${state.playerName} took a card of stack '${stack.name || 'Deck'}'`,
+						isBroadcast: true,
+					});
+				else
+					dispatch('sendChatMessage', {
+						text: `${state.playerName} gave a card of stack '${stack.name || 'Deck'}' to ${
+							state.matchData?.find(p => p.id == payload.toPlayerId).name
+						}`,
+						isBroadcast: true,
+					});
+			} else {
+				dispatch('sendChatMessage', {
+					text: `${state.playerName} gave a card to ${
+						state.matchData?.find(p => p.id == payload.toPlayerId).name
+					}`,
+					isBroadcast: true,
+				});
+			}
 			client.moves.giveCardToPlayer(payload);
 		},
-		flipCard(_, payload) {
+		flipCard({ dispatch, state }, payload) {
+			const stack = state.G?.table?.stacks?.find(stack => stack.id === payload.fromStackId);
+			if (stack) {
+				dispatch('sendChatMessage', {
+					text: `${state.playerName} flipped a card of stack '${stack.name || 'Deck'}'`,
+					isBroadcast: true,
+				});
+			}
 			client.moves.flipCard(payload);
 		},
-		giveStackToPlayer(_, payload) {
+		giveStackToPlayer({ dispatch, state }, payload) {
+			const stack = state.G?.table?.stacks?.find(stack => stack.id === payload.fromStackId);
+			if (stack) {
+				if (payload.toPlayerId === state.playerID)
+					dispatch('sendChatMessage', {
+						text: `${state.playerName} took stack '${stack.name || 'Deck'}'`,
+						isBroadcast: true,
+					});
+				else
+					dispatch('sendChatMessage', {
+						text: `${state.playerName} gave stack '${stack.name || 'Deck'}' to ${
+							state.matchData?.find(p => p.id == payload.toPlayerId).name
+						}`,
+						isBroadcast: true,
+					});
+			} else if (payload.toPlayerId !== 'table') {
+				dispatch('sendChatMessage', {
+					text: `${state.playerName} gave a stack to ${
+						state.matchData?.find(p => p.id == payload.toPlayerId)?.name
+					}`,
+					isBroadcast: true,
+				});
+			}
 			client.moves.giveStackToPlayer(payload);
 		},
 		takeStackInHand({ dispatch, state }, fromStackId) {
+			const stack = state.G?.table?.stacks?.find(stack => stack.id === fromStackId);
+			if (stack) {
+				dispatch('sendChatMessage', {
+					text: `${state.playerName} took stack '${stack.name || 'Deck'}' from the table`,
+					isBroadcast: true,
+				});
+			}
 			dispatch('giveStackToPlayer', { fromStackId, toPlayerId: state.playerID });
 		},
-		putStackOnTable({ dispatch }, fromStackId) {
+		putStackOnTable({ dispatch, state }, fromStackId) {
 			dispatch('giveStackToPlayer', { fromStackId, toPlayerId: 'table' });
+			dispatch('sendChatMessage', {
+				text: `${state.playerName} put a stack on the table`,
+				isBroadcast: true,
+			});
 		},
-		mergeStacks(_, payload) {
+		mergeStacks({ dispatch, state }, payload) {
+			const fromStack = state.G?.table?.stacks?.find(stack => stack.id === payload.fromStackId);
+			const toStack = state.G?.table?.stacks?.find(stack => stack.id === payload.toStackId);
+			if (fromStack && toStack) {
+				dispatch('sendChatMessage', {
+					text: `${state.playerName} merged stack '${fromStack.name || 'Deck'}' into stack '${toStack.name ||
+						'Deck'}'`,
+					isBroadcast: true,
+				});
+			} else if (fromStack) {
+				dispatch('sendChatMessage', {
+					text: `${state.playerName} took stack '${fromStack.name || 'Deck'}' from the table`,
+					isBroadcast: true,
+				});
+			} else if (toStack) {
+				dispatch('sendChatMessage', {
+					text: `${state.playerName} merged one of his stacks with stack '${toStack.name || 'Deck'}'`,
+					isBroadcast: true,
+				});
+			}
 			client.moves.mergeStacks(payload);
 		},
-		shuffleStack(_, stack) {
-			client.moves.shuffleStack(stack);
+		shuffleStack({ dispatch, state }, payload) {
+			const stack = state.G?.table?.stacks?.find(stack => stack.id === payload.id);
+			if (stack) {
+				dispatch('sendChatMessage', {
+					text: `${state.playerName} shuffled stack '${stack.name || 'Deck'}'`,
+					isBroadcast: true,
+				});
+			}
+			client.moves.shuffleStack(payload);
 		},
-		sendChatMessage(_, payload) {
-			client.sendChatMessage(payload);
+		sendChatMessage({ state }, payload) {
+			client.sendChatMessage({
+				senderName: state.playerName,
+				text: payload.text || payload,
+				isBroadcast: payload.isBroadcast,
+			});
 		},
 		undo() {
 			console.log('undo');
