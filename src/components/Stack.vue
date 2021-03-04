@@ -16,34 +16,55 @@
 				</p>
 			</b-field>
 			<h4 v-else class="has-text-weight-bold mb-0 has-cursor-text" @click="isEditingName = true">
-				{{ stack.name || 'Deck' }}
+				{{ stack.name || 'Deck' }} {{ isTable ? 'on the table' : 'in your hand' }}
 				<small class="has-size-7 has-text-weight-light"
 					>{{ stack.cards.length }} card{{ stack.cards.length === 1 ? '' : 's' }}</small
 				>
 			</h4>
-			<button class="delete is-pulled-right mt-1" @click="deleteStack(stack.id)"></button>
+			<b-tooltip type="is-danger" class="mt-1 is-pulled-right" label="Delete stack">
+				<button class="delete" @click="deleteStack(stack.id)"></button>
+			</b-tooltip>
+			<div class="buttons has-addons mb-0 mr-2" v-if="hasACard">
+				<b-tooltip label="Take deck in four hand" v-if="isTable">
+					<b-button icon-left="hand-right" @click="takeStackInHand(stack.id)" type="is-small"> </b-button>
+				</b-tooltip>
+				<b-tooltip label="Put deck on the table" v-else>
+					<b-button icon-left="table-furniture" @click="putStackOnTable(stack.id)" type="is-small">
+					</b-button>
+				</b-tooltip>
+			</div>
 			<div class="buttons has-addons mr-2 mb-0" v-if="hasMultipleCards">
-				<b-button
-					icon-left="content-cut"
-					@click="toggleCutOptions"
-					:type="isShowingCutOptions ? 'is-primary is-small' : 'is-small'"
-				>
-				</b-button>
-				<b-button icon-left="shuffle-variant" @click="handleShuffle" type="is-small"> </b-button>
+				<b-tooltip label="Cut stack">
+					<b-button
+						icon-left="content-cut"
+						@click="toggleCutOptions"
+						:type="isShowingCutOptions ? 'is-primary is-small' : 'is-small'"
+					>
+					</b-button>
+				</b-tooltip>
+				<b-tooltip label="Shuffle stack">
+					<b-button icon-left="shuffle-variant" @click="handleShuffle" type="is-small"> </b-button>
+				</b-tooltip>
 			</div>
 			<div class="buttons has-addons mb-0 mr-2" v-if="hasACard">
-				<b-button icon-left="eye" @click="showAllCards(stack)" type="is-small" v-if="hasSomeCardsFaceDown">
-				</b-button>
-				<b-button icon-left="eye-off" @click="hideAllCards(stack)" type="is-small" v-if="hasAllCardsFaceUp">
-				</b-button>
-				<b-button
-					icon-left="layers-triple-outline"
-					@click="toggleDisplayMode"
-					type="is-small"
-					v-if="hasMultipleCards"
-				>
-				</b-button>
-				<b-button icon-left="magnify-minus-outline" @click="toggleMinimized" type="is-small"> </b-button>
+				<b-tooltip label="Show all cards" v-if="hasSomeCardsFaceDown">
+					<b-button icon-left="eye" @click="showAllCards(stack)" type="is-small"> </b-button>
+				</b-tooltip>
+				<b-tooltip label="Hide all cards" v-if="hasAllCardsFaceUp">
+					<b-button icon-left="eye-off" @click="hideAllCards(stack)" type="is-small"> </b-button>
+				</b-tooltip>
+				<b-tooltip label="Toggle stack display">
+					<b-button
+						icon-left="layers-triple-outline"
+						@click="toggleDisplayMode"
+						type="is-small"
+						v-if="hasMultipleCards"
+					>
+					</b-button>
+				</b-tooltip>
+				<b-tooltip label="Minimize">
+					<b-button icon-left="magnify-minus-outline" @click="toggleMinimized" type="is-small"> </b-button>
+				</b-tooltip>
 			</div>
 			<div class="buttons has-addons mb-0">
 				<b-button class="button is-small is-transparent" icon-left="arrow-all" style="cursor:grab"></b-button>
@@ -52,7 +73,7 @@
 				<p class="control">
 					<b-button size="is-small" type="is-primary" @click="cut(stack.id)">Cut into</b-button>
 				</p>
-				<form @submit.prevent="cut(stack.id)">
+				<form @submit.prevent="cut">
 					<b-input
 						size="is-small"
 						type="number"
@@ -110,6 +131,10 @@ export default {
 			type: Object,
 			required: true,
 		},
+		isTable: {
+			required: false,
+			default: false,
+		},
 	},
 	data() {
 		return {
@@ -165,29 +190,29 @@ export default {
 			'showAllCards',
 			'hideAllCards',
 			'updateStack',
+			'takeStackInHand',
+			'putStackOnTable',
 		]),
-		handleShuffle() {
-			this.shuffleStack(this.stack);
+		async handleShuffle() {
+			await this.shuffleStack(this.stack);
 			const el = this.$el;
-			if (this.stack.isStacked) {
-				el.querySelectorAll('.cardcont').forEach((element, index) => {
-					const deg = Math.round(Math.random() * 6) - 3;
-					const x = Math.round(Math.random() * 6) - 3 + (index % 2 === 0 ? 350 : 0);
-					const y = Math.round(Math.random() * 6) - 3;
-					element.animate(
-						[
-							{ transform: 'rotate(0deg) translate(0px, 0px)' },
-							{ transform: `rotate(${deg}deg) translate(${x}px, ${y}px)` },
-							{ transform: 'rotate(0deg) translate(0px, 0px)' },
-						],
-						{
-							duration: 400,
-							iterations: 1,
-							delay: index * 10,
-						},
-					);
-				});
-			}
+			el.querySelectorAll('.cardcont').forEach((element, index) => {
+				const deg = Math.round(Math.random() * 6) - 3;
+				const x = index === 0 ? 300 : Math.round(Math.random() * 60) - 30 + (index % 2 === 0 ? 350 : 0);
+				const y = Math.round(Math.random() * 60) - 30;
+				element.animate(
+					[
+						{ transform: 'rotate(0deg) translate(0px, 0px)' },
+						{ transform: `rotate(${deg}deg) translate(${x}px, ${y}px)` },
+						{ transform: 'rotate(0deg) translate(0px, 0px)' },
+					],
+					{
+						duration: 400,
+						iterations: 1,
+						delay: index * 10,
+					},
+				);
+			});
 		},
 		toggleMinimized() {
 			this.isMinimized = !this.isMinimized;
@@ -199,9 +224,9 @@ export default {
 		toggleCutOptions() {
 			this.isShowingCutOptions = !this.isShowingCutOptions;
 		},
-		cut(stackId) {
+		cut() {
 			this.cutStack({
-				id: stackId,
+				id: this.stack.id,
 				into: this.cutValue,
 			});
 		},
@@ -230,8 +255,8 @@ export default {
 				free: 0,
 			}[this.displayMode];
 			const margin = {
-				stacked: `-${1 + size}em`,
-				spread: `${1.5 - size}em`,
+				stacked: `calc(2px - ${size + 0.5}em)`,
+				spread: `${1.7 - size}em`,
 				free: 0,
 			}[this.displayMode];
 			const rotateZ =
@@ -241,6 +266,7 @@ export default {
 				transform: `rotateZ(${rotateZ}deg)`,
 				transition: 'transform  150ms ease-in-out, margin 150ms ease-in-out',
 				'margin-left': index ? margin : 0,
+				'margin-right': '0.5em',
 				width: `${size}em`,
 			};
 		},
@@ -277,7 +303,7 @@ export default {
 .dropzone {
 	display: inline-block;
 	min-width: 180px;
-	min-height: 240px;
+	min-height: 180px;
 	padding: 10px 2px 20px 10px;
 	border: 1px dashed gray;
 	border-radius: 8px;
@@ -285,10 +311,7 @@ export default {
 }
 .cardcont {
 	display: inline-block;
-	min-width: 200px;
 	position: relative;
-	margin-right: 10px;
-	/* will-change: transform; */
 }
 .drop-target {
 	border-color: white;

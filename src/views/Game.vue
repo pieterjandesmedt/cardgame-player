@@ -1,5 +1,5 @@
 <template>
-	<div class="container is-fluid my-3">
+	<div class="my-3">
 		<table-top></table-top>
 		<chat></chat>
 	</div>

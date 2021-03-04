@@ -50,6 +50,10 @@ const store = {
 			if (!state.G?.players) return [];
 			return state.G.players[state.playerID]?.stacks || [];
 		},
+		tableStacks: state => {
+			if (!state.G?.table) return [];
+			return state.G.table?.stacks || [];
+		},
 	},
 	mutations: {
 		setMatches(state, payload) {
@@ -192,6 +196,12 @@ const store = {
 		},
 		giveStackToPlayer(_, payload) {
 			client.moves.giveStackToPlayer(payload);
+		},
+		takeStackInHand({ dispatch, state }, fromStackId) {
+			dispatch('giveStackToPlayer', { fromStackId, toPlayerId: state.playerID });
+		},
+		putStackOnTable({ dispatch }, fromStackId) {
+			dispatch('giveStackToPlayer', { fromStackId, toPlayerId: 'table' });
 		},
 		mergeStacks(_, payload) {
 			client.moves.mergeStacks(payload);

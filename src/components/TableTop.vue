@@ -1,10 +1,18 @@
 <template>
-	<div class="">
-		<div class="columns">
-			<nav-bar class="column is-narrow"></nav-bar>
-			<other-players class="column is-offset-1 mt-0" :players="matchData"></other-players>
+	<div>
+		<div class="container is-fluid">
+			<div class="columns">
+				<nav-bar class="column is-narrow"></nav-bar>
+				<other-players class="column is-offset-1 mt-0" :players="matchData"></other-players>
+			</div>
+			<stack v-for="stack in tableStacks" :key="stack.id" :isTable="true" :stack="stack"></stack>
 		</div>
-		<stack v-for="stack in stacks" :key="stack.id" :is-stacked="stack.isStacked" :stack="stack"></stack>
+		<section class="hero is-dark" v-if="tableStacks.length > 0">
+			<div class="hero-body py-5"></div>
+		</section>
+		<div class="container is-fluid">
+			<stack v-for="stack in stacks" :key="stack.id" :stack="stack"></stack>
+		</div>
 	</div>
 </template>
 
@@ -22,7 +30,7 @@ export default {
 	},
 	computed: {
 		...mapState(['matchData']),
-		...mapGetters(['stacks']),
+		...mapGetters(['stacks', 'tableStacks']),
 	},
 };
 </script>

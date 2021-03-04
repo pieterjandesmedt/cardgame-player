@@ -13,6 +13,9 @@ export const CardGame = {
 			game.players[index] = {
 				stacks: [],
 			};
+			game.table = {
+				stacks: [],
+			};
 		}
 		ctx.events.setActivePlayers({ all: Stage.NULL });
 		return game;
@@ -27,7 +30,7 @@ export const CardGame = {
 				card.deckName = card.deckName || newStack.deck.name;
 				card.isFaceUp = card.isFaceUp || true;
 				card.ratio = newStack.deck.ratio || 'is-3by4';
-				card.size = newStack.deck.size || 20;
+				card.size = newStack.deck.size || 16;
 			});
 			G.players[owner].stacks.push({
 				id: cuid(),
@@ -37,21 +40,31 @@ export const CardGame = {
 		},
 		updateStack: (G, ctx, newStack) => {
 			const owner = ctx.playerID;
-			const index = G.players[owner].stacks.findIndex(stack => stack.id === newStack.id);
-			if (index === -1) throw new Error(`Stack ${newStack.id} not found. Can't update.`);
-			G.players[owner].stacks.splice(index, 1, newStack);
+			const playerStackIndex = G.players[owner].stacks.findIndex(stack => stack.id === newStack.id);
+			const tableStackIndex = G.table.stacks.findIndex(stack => stack.id === newStack.id);
+			if (playerStackIndex === -1 && tableStackIndex === -1)
+				throw new Error(`Stack ${newStack.id} not found. Can't update.`);
+			if (playerStackIndex !== -1) G.players[owner].stacks.splice(playerStackIndex, 1, newStack);
+			if (tableStackIndex !== -1) G.table.stacks.splice(tableStackIndex, 1, newStack);
 		},
 		deleteStack: (G, ctx, id) => {
 			const owner = ctx.playerID;
-			const index = G.players[owner].stacks.findIndex(stack => stack.id === id);
-			if (index === -1) throw new Error(`Stack ${id} not found. Can't delete.`);
-			G.players[owner].stacks.splice(index, 1);
+			const playerStackIndex = G.players[owner].stacks.findIndex(stack => stack.id === id);
+			const tableStackIndex = G.table.stacks.findIndex(stack => stack.id === id);
+			if (playerStackIndex === -1 && tableStackIndex === -1)
+				throw new Error(`Stack ${id} not found. Can't delete.`);
+			if (playerStackIndex !== -1) G.players[owner].stacks.splice(playerStackIndex, 1);
+			if (tableStackIndex !== -1) G.table.stacks.splice(tableStackIndex, 1);
 		},
 		moveCardBetweenStacks: (G, ctx, { fromStackId, toStackId, cardId }) => {
 			const owner = ctx.playerID;
 
-			const fromStack = G.players[owner].stacks.find(stack => stack.id === fromStackId);
-			const toStack = G.players[owner].stacks.find(stack => stack.id === toStackId);
+			const fromStack =
+				G.players[owner].stacks.find(stack => stack.id === fromStackId) ||
+				G.table.stacks.find(stack => stack.id === fromStackId);
+			const toStack =
+				G.players[owner].stacks.find(stack => stack.id === toStackId) ||
+				G.table.stacks.find(stack => stack.id === fromStackId);
 			if (!fromStack || !toStack)
 				throw new Error(`One of the stacks was not found. Couldn't move card ${cardId}.`);
 
@@ -64,15 +77,22 @@ export const CardGame = {
 		},
 		shuffleStack: (G, ctx, payload) => {
 			const owner = ctx.playerID;
-			const stack = G.players[owner].stacks.find(stack => stack.id === payload.id);
+			const stack =
+				G.players[owner].stacks.find(stack => stack.id === payload.id) ||
+				G.table.stacks.find(stack => stack.id === payload.id);
 			if (stack) stack.cards.splice(0, stack.cards.length, ...shuffle(stack.cards));
 		},
 		cutStack: (G, ctx, payload) => {
 			const owner = ctx.playerID;
-			const stackIndex = G.players[owner].stacks.findIndex(stack => stack.id === payload.id);
-			if (stackIndex === -1) throw new Error(`Stack ${payload.id} not found. Can't cut.`);
+			const playerStackIndex = G.players[owner].stacks.findIndex(stack => stack.id === payload.id);
+			const tableStackIndex = G.table.stacks.findIndex(stack => stack.id === payload.id);
+			if (playerStackIndex === -1 && tableStackIndex === -1)
+				throw new Error(`Stack ${payload.id} not found. Can't cut.`);
 
-			const [stack] = G.players[owner].stacks.splice(stackIndex, 1);
+			const [stack] =
+				playerStackIndex !== -1
+					? G.players[owner].stacks.splice(playerStackIndex, 1)
+					: G.table.stacks.splice(tableStackIndex, 1);
 			let into = 2;
 			try {
 				into = Math.min(Math.max(parseInt(payload.into, 10), 2), stack.cards.length);
@@ -96,11 +116,14 @@ export const CardGame = {
 				newStacks.push(newStack);
 				start += value;
 			});
-			G.players[owner].stacks.splice(stackIndex, 0, ...newStacks);
+			if (playerStackIndex !== -1) G.players[owner].stacks.splice(playerStackIndex, 0, ...newStacks);
+			else G.table.stacks.splice(tableStackIndex, 1, ...newStacks);
 		},
 		showAllCards: (G, ctx, payload) => {
 			const owner = ctx.playerID;
-			const stack = G.players[owner].stacks.find(stack => stack.id === payload.id);
+			const stack =
+				G.players[owner].stacks.find(stack => stack.id === payload.id) ||
+				G.table.stacks.find(stack => stack.id === payload.id);
 			if (stack) {
 				stack.cards.forEach(c => {
 					c.isFaceUp = true;
@@ -110,7 +133,9 @@ export const CardGame = {
 		},
 		hideAllCards: (G, ctx, payload) => {
 			const owner = ctx.playerID;
-			const stack = G.players[owner].stacks.find(stack => stack.id === payload.id);
+			const stack =
+				G.players[owner].stacks.find(stack => stack.id === payload.id) ||
+				G.table.stacks.find(stack => stack.id === payload.id);
 			if (stack) {
 				stack.cards.forEach(c => {
 					c.isFaceUp = false;
@@ -121,10 +146,12 @@ export const CardGame = {
 		},
 		flipCard: (G, ctx, { fromStackId, cardId }) => {
 			const owner = ctx.playerID;
-			const fromStack = G.players[owner].stacks.find(stack => stack.id === fromStackId);
-			if (!fromStack) throw new Error(`The stack ${fromStackId} was not found. Couldn't move card ${cardId}.`);
+			const stack =
+				G.players[owner].stacks.find(stack => stack.id === fromStackId) ||
+				G.table.stacks.find(stack => stack.id === fromStackId);
+			if (!stack) throw new Error(`The stack ${fromStackId} was not found. Couldn't move card ${cardId}.`);
 
-			const card = fromStack.cards.find(card => `${card.id}` === `${cardId}`);
+			const card = stack.cards.find(card => `${card.id}` === `${cardId}`);
 			if (!card)
 				throw new Error(`Stack ${fromStackId} doesn't contain card ${cardId}. Can't move card ${cardId}.`);
 
@@ -138,17 +165,30 @@ export const CardGame = {
 			}
 		},
 		giveCardToPlayer: (G, ctx, { fromStackId, cardId, toPlayerId }) => {
-			if (!G.players[toPlayerId]) return;
+			if (toPlayerId !== 'table' && !G.players[toPlayerId]) return;
 			const owner = ctx.playerID;
-			const fromStack = G.players[owner].stacks.find(stack => stack.id === fromStackId);
-			const hasToStack = G.players[toPlayerId].stacks.find(stack => stack.name === 'Received');
-			if (!hasToStack)
-				G.players[toPlayerId].stacks.push({
+			const fromStack =
+				G.players[owner].stacks.find(stack => stack.id === fromStackId) ||
+				G.table.stacks.find(stack => stack.id === fromStackId);
+
+			const hasToStack =
+				toPlayerId === 'table'
+					? G.table.stacks.find(stack => stack.name === 'Received')
+					: G.players[toPlayerId].stacks.find(stack => stack.name === 'Received');
+			if (!hasToStack) {
+				const newStack = {
 					id: cuid(),
 					name: 'Received',
 					cards: [],
-				});
-			const toStack = G.players[toPlayerId].stacks.find(stack => stack.name === 'Received');
+				};
+				if (toPlayerId === 'table') G.table.stacks.push(newStack);
+				else G.players[toPlayerId].stacks.push(newStack);
+			}
+			const toStack =
+				toPlayerId === 'table'
+					? G.table.stacks.find(stack => stack.name === 'Received')
+					: G.players[toPlayerId].stacks.find(stack => stack.name === 'Received');
+
 			if (fromStack && toStack) {
 				const cardIndex = fromStack.cards.findIndex(card => `${card.id}` === `${cardId}`);
 				if (cardIndex === -1)
@@ -161,28 +201,50 @@ export const CardGame = {
 			}
 		},
 		giveStackToPlayer: (G, ctx, { fromStackId, toPlayerId }) => {
-			if (!G.players[toPlayerId]) return;
+			if (toPlayerId !== 'table' && !G.players[toPlayerId]) return;
 			const owner = ctx.playerID;
-			const fromStackIndex = G.players[owner].stacks.findIndex(stack => stack.id === fromStackId);
+			const playerStackIndex = G.players[owner].stacks.findIndex(stack => stack.id === fromStackId);
+			const tableStackIndex = G.table.stacks.findIndex(stack => stack.id === fromStackId);
+			if (playerStackIndex === -1 && tableStackIndex === -1)
+				throw new Error(`Stack ${fromStackId} not found. Can't give stack to ${toPlayerId}.`);
 
-			if (fromStackIndex !== -1) {
-				const [stack] = G.players[owner].stacks.splice(fromStackIndex, 1);
-				G.players[toPlayerId].stacks.push(stack);
+			if (playerStackIndex !== -1) {
+				const [stack] = G.players[owner].stacks.splice(playerStackIndex, 1);
+				if (toPlayerId === 'table') G.table.stacks.push(stack);
+				else G.players[toPlayerId].stacks.push(stack);
+			} else if (tableStackIndex !== -1) {
+				const [stack] = G.table.stacks.splice(tableStackIndex, 1);
+				if (toPlayerId === 'table') G.table.stacks.push(stack);
+				else G.players[toPlayerId].stacks.push(stack);
 			} else {
 				throw new Error(`The stack was not found. Couldn't move stack ${fromStackId}.`);
 			}
 		},
 		mergeStacks: (G, ctx, { fromStackId, toStackId }) => {
 			const owner = ctx.playerID;
-			const fromStack = G.players[owner].stacks.find(stack => stack.id === fromStackId);
-			const fromStackIndex = G.players[owner].stacks.findIndex(stack => stack.id === fromStackId);
-			const toStack = G.players[owner].stacks.find(stack => stack.id === toStackId);
+
+			const fromStack =
+				G.players[owner].stacks.find(stack => stack.id === fromStackId) ||
+				G.table.stacks.find(stack => stack.id === fromStackId);
+			const toStack =
+				G.players[owner].stacks.find(stack => stack.id === toStackId) ||
+				G.table.stacks.find(stack => stack.id === fromStackId);
 
 			if (!fromStack) throw new Error(`The stack was not found. Couldn't merge stack ${fromStackId}.`);
 			if (!toStack) throw new Error(`The stack was not found. Couldn't merge into stack ${toStackId}.`);
 
 			toStack.cards.splice(0, 0, ...fromStack.cards);
-			G.players[owner].stacks.splice(fromStackIndex, 1);
+
+			const playerStackIndex = G.players[owner].stacks.findIndex(stack => stack.id === fromStackId);
+			const tableStackIndex = G.table.stacks.findIndex(stack => stack.id === fromStackId);
+
+			if (playerStackIndex !== -1) {
+				G.players[owner].stacks.splice(playerStackIndex, 1);
+			} else if (tableStackIndex !== -1) {
+				G.table.stacks.splice(tableStackIndex, 1);
+			} else {
+				throw new Error(`The stack was not found. Couldn't move stack ${fromStackId}.`);
+			}
 		},
 	},
 	endIf: G => Object.keys(G.players).length === 0,
