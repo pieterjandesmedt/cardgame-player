@@ -16,5 +16,7 @@ export default {
 <style>
 .interact {
 	touch-action: none;
+	user-select: none;
+	will-change: transform, margin;
 }
 </style>

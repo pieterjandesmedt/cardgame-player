@@ -264,7 +264,7 @@ export default {
 			return {
 				'z-index': this.stack.cards.length - index,
 				transform: `rotateZ(${rotateZ}deg)`,
-				transition: 'transform  150ms ease-in-out, margin 150ms ease-in-out',
+				transition: 'margin 150ms ease-in-out',
 				'margin-left': index ? margin : 0,
 				'margin-right': '0.5em',
 				width: `${size}em`,
