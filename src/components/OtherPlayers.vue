@@ -1,5 +1,5 @@
 <template>
-	<div class="columns">
+	<div class="columns is-mobile">
 		<dropzone
 			class="column mx-1 has-text-centered"
 			v-for="player in otherPlayers"

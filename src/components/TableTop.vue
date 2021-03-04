@@ -1,8 +1,10 @@
 <template>
 	<div>
-		<div class="columns">
-			<nav-bar class="column is-narrow"></nav-bar>
-			<other-players class="column is-offset-1 mt-0" :players="matchData"></other-players>
+		<div class="container is-fluid">
+			<div class="columns is-mobile">
+				<nav-bar class="column is-narrow"></nav-bar>
+				<other-players class="column is-offset-1 mt-0" :players="matchData"></other-players>
+			</div>
 		</div>
 		<div class="container is-fluid" v-if="tableStacks.length > 0">
 			<stack v-for="stack in tableStacks" :key="stack.id" :isTable="true" :stack="stack"></stack>
