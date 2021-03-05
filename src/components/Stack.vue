@@ -21,10 +21,10 @@
 					>{{ stack.cards.length }} card{{ stack.cards.length === 1 ? '' : 's' }}</small
 				>
 			</h4>
-			<b-tooltip type="is-danger" class="mt-1 is-pulled-right" label="Delete stack">
+			<b-tooltip type="is-danger" class="mt-1 ml-2 is-pulled-right" label="Delete stack">
 				<button class="delete" @click="confirmDelete"></button>
 			</b-tooltip>
-			<div class="buttons has-addons mb-0 mr-2" v-if="hasACard">
+			<div class="buttons has-addons mb-0 mr-2">
 				<b-tooltip label="Take in your hand" v-if="isTable">
 					<b-button icon-left="hand-right" @click="takeStackInHand(stack.id)" type="is-small"> </b-button>
 				</b-tooltip>
@@ -306,7 +306,7 @@ export default {
 	}
 }
 .stack {
-	margin: 0.75rem;
+	margin: 0.75rem 0.75rem 0.75rem 0;
 	display: inline-block;
 }
 .hidden {
