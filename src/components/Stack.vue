@@ -139,7 +139,7 @@ export default {
 	data() {
 		return {
 			isMinimized: false,
-			displayMode: 'spread',
+			displayMode: 'stacked',
 			isShowingCutOptions: false,
 			isEditingName: false,
 			newName: 'Deck',
