@@ -143,7 +143,7 @@ export default {
 			displayMode: 'stacked',
 			isShowingCutOptions: false,
 			isEditingName: false,
-			newName: 'Deck',
+			newName: this.stack.name || 'Deck',
 			cutValue: 2,
 			resizableOpt: {
 				inertia: true,
