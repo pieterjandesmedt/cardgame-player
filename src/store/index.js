@@ -113,7 +113,7 @@ const store = {
 			const stack = state.G?.table?.stacks?.find(stack => stack.id === payload.id);
 			if (stack) {
 				dispatch('sendChatMessage', {
-					text: `${state.playerName} has cut stack '${stack.name || 'Deck'}'`,
+					text: `${state.playerName} cut stack '${stack.name || 'Deck'}'`,
 					isBroadcast: true,
 				});
 			}
@@ -123,7 +123,7 @@ const store = {
 			const stack = state.G?.table?.stacks?.find(stack => stack.id === id);
 			if (stack) {
 				dispatch('sendChatMessage', {
-					text: `${state.playerName} has cut stack '${stack.name || 'Deck'}'`,
+					text: `${state.playerName} deleted stack '${stack.name || 'Deck'}'`,
 					isBroadcast: true,
 				});
 			}
@@ -206,7 +206,7 @@ const store = {
 			const stack = state.G?.table?.stacks?.find(stack => stack.id === payload.id);
 			if (stack) {
 				dispatch('sendChatMessage', {
-					text: `${state.playerName} has flipped stack '${stack.name || 'Deck'}'`,
+					text: `${state.playerName} flipped stack '${stack.name || 'Deck'}'`,
 					isBroadcast: true,
 				});
 			}
@@ -216,7 +216,7 @@ const store = {
 			const stack = state.G?.table?.stacks?.find(stack => stack.id === payload.id);
 			if (stack) {
 				dispatch('sendChatMessage', {
-					text: `${state.playerName} has flipped stack '${stack.name || 'Deck'}'`,
+					text: `${state.playerName} flipped stack '${stack.name || 'Deck'}'`,
 					isBroadcast: true,
 				});
 			}
