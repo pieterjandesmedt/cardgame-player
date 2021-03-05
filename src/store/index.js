@@ -6,6 +6,7 @@ import { Client } from 'boardgame.io/client';
 import { SocketIO } from 'boardgame.io/multiplayer';
 import { LobbyClient } from 'boardgame.io/client';
 import { CardGame } from '../game.js';
+import { EventBus } from '@/components/event-bus.js';
 
 const server =
 	process.env.NODE_ENV === 'production' ? 'https://cardgame-player.herokuapp.com/' : 'http://localhost:8000/';
@@ -19,6 +20,8 @@ const client = new Client({
 	debug: false,
 });
 
+let lastMessageId;
+
 const vuexLocal = new VuexPersistence({
 	storage: window.localStorage,
 	key: 'card-game-client',
@@ -31,7 +34,6 @@ const vuexLocal = new VuexPersistence({
 });
 
 Vue.use(Vuex);
-// const playerID = cuid();
 
 const store = {
 	state: {
@@ -90,6 +92,13 @@ const store = {
 				commit('setGameState', gameState);
 				commit('setMatchData', client.matchData || []);
 				commit('setChatMessages', client.chatMessages || []);
+				if (client.chatMessages.length > 0) {
+					const lastMessage = client.chatMessages[client.chatMessages.length - 1];
+					if (lastMessage.payload.event && lastMessage.id !== lastMessageId) {
+						lastMessageId = lastMessage.id;
+						EventBus.$emit(lastMessage.payload.event, lastMessage.payload.eventPayload);
+					}
+				}
 			};
 			client.subscribe(sync);
 			sync();
@@ -335,6 +344,8 @@ const store = {
 				dispatch('sendChatMessage', {
 					text: `${state.playerName} shuffled stack '${stack.name || 'Deck'}'`,
 					isBroadcast: true,
+					event: 'shuffle-stack',
+					eventPayload: stack.id,
 				});
 			}
 			client.moves.shuffleStack(payload);
@@ -342,8 +353,7 @@ const store = {
 		sendChatMessage({ state }, payload) {
 			client.sendChatMessage({
 				senderName: state.playerName,
-				text: payload.text || payload,
-				isBroadcast: payload.isBroadcast,
+				...payload,
 			});
 		},
 		undo() {

@@ -113,9 +113,10 @@
 
 <script>
 import { mapActions } from 'vuex';
-import Dropzone from './Interact/Dropzone.vue';
-import Interact from './Interact/Interact.vue';
-import Card from './display/Card.vue';
+import Dropzone from '@/components/Interact/Dropzone.vue';
+import Interact from '@/components/Interact/Interact.vue';
+import Card from '@/components/display/Card.vue';
+import { EventBus } from '@/components/event-bus.js';
 import { dropHandler } from '@/mixins';
 
 const displayModes = ['stacked', 'spread', 'free'];
@@ -195,6 +196,10 @@ export default {
 		]),
 		async handleShuffle() {
 			await this.shuffleStack(this.stack);
+			this.animateShuffle();
+		},
+		animateShuffle(stackId) {
+			if (stackId && stackId !== this.stack.id) return;
 			const el = this.$el;
 			el.querySelectorAll('.cardcont').forEach((element, index) => {
 				const deg = Math.round(Math.random() * 6) - 3;
@@ -217,9 +222,13 @@ export default {
 		toggleMinimized() {
 			this.isMinimized = !this.isMinimized;
 		},
-		toggleDisplayMode() {
-			this.displayMode =
-				displayModes[(displayModes.findIndex(dm => dm === this.displayMode) + 1) % displayModes.length];
+		toggleDisplayMode({ displayMode, stackId }) {
+			if (displayMode && stackId && stackId === this.stackId && displayModes.includes(displayMode)) {
+				this.displayMode = displayMode;
+			} else {
+				this.displayMode =
+					displayModes[(displayModes.findIndex(dm => dm === this.displayMode) + 1) % displayModes.length];
+			}
 		},
 		toggleCutOptions() {
 			this.isShowingCutOptions = !this.isShowingCutOptions;
@@ -287,6 +296,12 @@ export default {
 				onConfirm: () => this.deleteStack(this.stack.id),
 			});
 		},
+	},
+	mounted() {
+		EventBus.$on('shuffle-stack', this.animateShuffle);
+	},
+	beforeDestroy() {
+		EventBus.$off('shuffle-stack', this.animateShuffle);
 	},
 };
 </script>
