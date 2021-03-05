@@ -152,7 +152,7 @@ const store = {
 						credentials: state.credentials,
 					});
 				} catch (err) {
-					console.log('err:', err);
+					// console.log('err:', err);
 				}
 			}
 			const match = await lobbyClient.getMatch('card-game', matchID);

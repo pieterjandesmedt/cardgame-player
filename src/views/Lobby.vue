@@ -56,12 +56,6 @@ export default {
 	computed: {
 		...mapState(['matches', 'playerName']),
 		filteredMatches() {
-			console.log(
-				'filteredMatches',
-				this.matches.filter(
-					match => match.players.filter(player => player.name && player.isConnected).length > 0,
-				),
-			);
 			return this.matches.filter(
 				match => match.players.filter(player => player.name && player.isConnected).length > 0,
 			);

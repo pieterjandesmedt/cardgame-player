@@ -28,7 +28,7 @@ export default {
 					playerName: this.playerName,
 				});
 			} catch (err) {
-				console.log('err:', err);
+				// console.log('err:', err);
 				this.$router.push('/lobby');
 			}
 		},
