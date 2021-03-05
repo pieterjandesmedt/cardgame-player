@@ -6,6 +6,11 @@
 			</button>
 		</b-tooltip>
 		<upload></upload>
+		<b-tooltip label="Order stacks" position="is-bottom">
+			<button class="button mr-2" @click="orderStacks">
+				<b-icon icon="apps"></b-icon>
+			</button>
+		</b-tooltip>
 		<b-tooltip label="Create empty stack" position="is-bottom">
 			<button class="button is-transparent mr-2" @click="createStack(undefined)">
 				<b-icon icon="plus"></b-icon>
@@ -22,6 +27,7 @@
 <script>
 import { mapActions } from 'vuex';
 import Upload from './Upload';
+import { EventBus } from './event-bus';
 
 export default {
 	components: { Upload },
@@ -30,6 +36,9 @@ export default {
 		async leave() {
 			await this.leaveGame();
 			this.$router.push('/lobby');
+		},
+		orderStacks() {
+			EventBus.$emit('order-stacks');
 		},
 	},
 };

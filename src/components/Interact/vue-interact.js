@@ -1,4 +1,5 @@
 import interact from 'interactjs';
+import { EventBus } from '../event-bus.js';
 
 const Interact = {
 	props: {
@@ -65,6 +66,8 @@ const Interact = {
 			onmove: this.dragMoveListener,
 			onend: this.dragEndListener,
 		};
+		EventBus.$on('order-stacks', this.resetPosition);
+
 		interact(this.$el)
 			.resizable(this.resizableOpt ? this.resizableOpt : resizableSettings)
 			.draggable(this.draggableOpt ? this.draggableOpt : draggableSettings)
@@ -118,9 +121,17 @@ const Interact = {
 				this.$emit('hold', event);
 			}
 		},
+		resetPosition() {
+			this.$el.style.webkitTransform = `translate(0px, 0px)`;
+			this.$el.style.transform = `translate(0px, 0px)`;
+
+			this.$el.setAttribute('data-x', 0);
+			this.$el.setAttribute('data-y', 0);
+		},
 	},
 	beforeDestroy() {
 		interact(this.$el).unset();
+		EventBus.$off('order-stacks', this.resetPosition);
 	},
 };
 
