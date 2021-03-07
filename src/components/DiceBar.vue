@@ -70,12 +70,10 @@ export default {
 		handleRollDie(index, i) {
 			this.rollDie({ dieType: index, dieIndex: i });
 		},
-		isRolling(dieIndex, dieType) {
+		isRolling(dieType, dieIndex) {
 			this.currentlyRolling.includes(`${dieType}-${dieIndex}`);
 		},
 		animateDieRoll(payload) {
-			console.log('animateDieRoll:', payload);
-
 			this.currentlyRolling.push(`${payload.dieType}-${payload.dieIndex}`);
 			const vm = this;
 			setTimeout(() => {
