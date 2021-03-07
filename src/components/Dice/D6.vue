@@ -37,7 +37,6 @@ $containerHeight: $containerWidth;
 $transitionDuration: 0.5s;
 $animationDuration: 1s;
 
-
 @keyframes roll {
 	0% {
 		transform: rotateX(0deg) rotateY(0deg);

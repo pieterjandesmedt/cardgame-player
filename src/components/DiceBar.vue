@@ -71,7 +71,7 @@ export default {
 			this.rollDie({ dieType: index, dieIndex: i });
 		},
 		isRolling(dieType, dieIndex) {
-			this.currentlyRolling.includes(`${dieType}-${dieIndex}`);
+			return this.currentlyRolling.includes(`${dieType}-${dieIndex}`);
 		},
 		animateDieRoll(payload) {
 			this.currentlyRolling.push(`${payload.dieType}-${payload.dieIndex}`);
