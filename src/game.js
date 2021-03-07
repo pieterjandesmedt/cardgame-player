@@ -36,7 +36,7 @@ export const CardGame = {
 				if (G.diceBar[dieType].length < newDiceBar[dieType])
 					G.diceBar[dieType].push(...Array(newDiceBar[dieType] - G.diceBar[dieType].length).fill(1));
 				if (G.diceBar[dieType].length > newDiceBar[dieType])
-					G.diceBar[dieType].splice(-newDiceBar[dieType], newDiceBar[dieType]);
+					G.diceBar[dieType].splice(-newDiceBar[dieType], G.diceBar[dieType].length - newDiceBar[dieType]);
 			});
 		},
 		rollDie(G, ctx, { dieType, dieIndex }) {
