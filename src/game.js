@@ -13,15 +13,37 @@ export const CardGame = {
 			game.players[index] = {
 				stacks: [],
 			};
-			game.table = {
-				stacks: [],
-			};
 		}
+		game.table = {
+			stacks: [],
+		};
+		game.diceBar = {
+			d2: [],
+			d4: [],
+			d6: [],
+			d8: [],
+			d10: [],
+			d20: [],
+		};
+
 		ctx.events.setActivePlayers({ all: Stage.NULL });
 		return game;
 	},
 	playerView: PlayerView.STRIP_SECRETS,
 	moves: {
+		setDiceBar(G, ctx, newDiceBar) {
+			Object.keys(newDiceBar).forEach(dieType => {
+				if (G.diceBar[dieType].length < newDiceBar[dieType])
+					G.diceBar[dieType].push(...Array(newDiceBar[dieType] - G.diceBar[dieType].length).fill(1));
+				if (G.diceBar[dieType].length > newDiceBar[dieType])
+					G.diceBar[dieType].splice(-newDiceBar[dieType], newDiceBar[dieType]);
+			});
+		},
+		rollDie(G, ctx, { dieType, dieIndex }) {
+			const spotValue = parseInt(dieType.replace('d', ''), 10);
+			const roll = ctx.random.Die(spotValue);
+			G.diceBar[dieType][dieIndex] = roll;
+		},
 		createStack: (G, ctx, newStack) => {
 			const owner = ctx.playerID;
 			if (!newStack) newStack = { cards: [] };

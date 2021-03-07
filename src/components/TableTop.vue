@@ -2,7 +2,10 @@
 	<div>
 		<div class="container is-fluid px-6">
 			<div class="columns is-mobile">
-				<nav-bar class="column is-narrow"></nav-bar>
+				<div class="column is-narrow">
+					<nav-bar></nav-bar>
+					<dice-bar></dice-bar>
+				</div>
 				<other-players class="column is-offset-1 mt-0" :players="matchData"></other-players>
 			</div>
 		</div>
@@ -19,12 +22,13 @@
 <script>
 import { mapGetters, mapState } from 'vuex';
 import NavBar from './NavBar';
+import DiceBar from './DiceBar';
 import OtherPlayers from './OtherPlayers';
 import Stack from './Stack.vue';
 
 export default {
 	name: 'TableTop',
-	components: { NavBar, Stack, OtherPlayers },
+	components: { NavBar, DiceBar, Stack, OtherPlayers },
 	props: {
 		msg: String,
 	},

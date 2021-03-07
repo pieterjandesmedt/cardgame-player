@@ -56,6 +56,18 @@ const store = {
 			if (!state.G?.table) return [];
 			return state.G.table?.stacks || [];
 		},
+		diceBar: state => {
+			if (!state.G?.diceBar)
+				return {
+					d2: [],
+					d4: [],
+					d6: [],
+					d8: [],
+					d10: [],
+					d20: [],
+				};
+			return state.G.diceBar;
+		},
 	},
 	mutations: {
 		setMatches(state, payload) {
@@ -359,6 +371,18 @@ const store = {
 		undo() {
 			console.log('undo');
 			client.undo();
+		},
+		setDiceBar(_, newDiceBar) {
+			client.moves.setDiceBar(newDiceBar);
+		},
+		rollDie({ dispatch, state }, payload) {
+			client.moves.rollDie(payload);
+			dispatch('sendChatMessage', {
+				text: `${state.playerName} rolled a die`,
+				isBroadcast: true,
+				event: 'roll-die',
+				eventPayload: payload,
+			});
 		},
 	},
 };

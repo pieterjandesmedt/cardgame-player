@@ -11,6 +11,11 @@
 				<b-icon icon="apps"></b-icon>
 			</button>
 		</b-tooltip>
+		<b-tooltip label="Set dice" position="is-bottom">
+			<button class="button mr-2" @click="toggleDiceSelector">
+				<b-icon icon="dice-6"></b-icon>
+			</button>
+		</b-tooltip>
 		<b-tooltip label="Create empty stack" position="is-bottom">
 			<button class="button is-transparent mr-2" @click="createStack(undefined)">
 				<b-icon icon="plus"></b-icon>
@@ -21,6 +26,9 @@
 				<b-icon icon="undo"></b-icon>
 			</button>
 		</b-tooltip> -->
+		<b-modal v-model="isDieSelectorActive" :width="640" scroll="keep">
+			<die-selector @close="toggleDiceSelector"></die-selector>
+		</b-modal>
 	</div>
 </template>
 
@@ -28,9 +36,15 @@
 import { mapActions } from 'vuex';
 import Upload from './Upload';
 import { EventBus } from './event-bus';
+import DieSelector from '@/components/DieSelector.vue';
 
 export default {
-	components: { Upload },
+	components: { Upload, DieSelector },
+	data() {
+		return {
+			isDieSelectorActive: false,
+		};
+	},
 	methods: {
 		...mapActions(['createStack', 'leaveGame', 'undo']),
 		async leave() {
@@ -39,6 +53,9 @@ export default {
 		},
 		orderStacks() {
 			EventBus.$emit('order-stacks');
+		},
+		toggleDiceSelector() {
+			this.isDieSelectorActive = !this.isDieSelectorActive;
 		},
 	},
 };
